@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="main.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"
+  />
+  <title>Tracalorie | Meal & Calorie Tracker</title>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav>
+    
+    <div class="nav-wrapper blue">
+      <div class="container">
+        <a href="#" class="brand-logo center">Tracalorie</a>
+        <ul class="right">
+          <li><a href="#" class="waves-effect cyan lighten-2 btn clear-btn">Clear All</a></li>
+          <li><a class="modal-trigger"><i class="fa fa-calendar fa-3x" aria-hidden="true"></i></a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <br>
+
+  <div class="container">
+    <!-- Form Card -->
+    <div class="card information">
+      <div class="card-content">
+        <span class="card-title">Add Meal / Food Item</span>
+        <form class="col">
+          <div class="row">
+            <div class="input-field col s6">
+              <input type="text" placeholder="Add Item" id="item-name">
+              <label for="item-name">Meal</label>
+            </div>
+            <div class="input-field col s6">
+                <input type="number" placeholder="Add Calories" id="item-calories">
+                <label for="item-calories">Calories</label>
+            </div>
+            <button class="add-btn btn blue darken-3"><i class="fa fa-plus"></i> Add Meal</button>
+            
+            <button class="update-btn btn orange"><i class="fa fa-pencil-square-o"></i> Update Meal</button>
+            <button class="delete-btn btn red"><i class="fa fa-remove"></i> Delete Meal</button>
+            
+            <button class="back-btn btn grey pull-right"><i class="fa fa-chevron-circle-left"></i> Back</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="contain">
+      <div class="calendar w3-animate-top">
+        <div class="month">
+          <i class="fas fa-angle-left prev"></i>
+          <div class="date">
+            <h1></h1>
+            <p></p>
+            <a href='#'><i class="fa fa-window-close fa-2x"></i></a>
+          </div>
+          <i class="fas fa-angle-right next"></i>
+        </div>
+        <div class="weekdays">
+          <div>Sun</div>
+          <div>Mon</div>
+          <div>Tue</div>
+          <div>Wed</div>
+          <div>Thu</div>
+          <div>Fri</div>
+          <div>Sat</div>
+        </div>
+        <div class="days"></div>
+      </div>
+    </div>
+
+    <div class='information'>
+      <!-- Calorie Count -->
+      <h3 class="center-align">Total Calories: <!--<img class='spinner' src='img/loading.gif' width="80" height="80"></img><span class="total-calories">0</span>--></h3>
+
+      <!-- Item List -->
+      <ul id="item-list" class="collection">
+
+      </ul>
+    </div>
+  </div>
+  <br />
+  
+  <!--<button class='test'>Click Me</button>-->
+
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+  <script src='app.js'></script>    
+</body>
+</html>
