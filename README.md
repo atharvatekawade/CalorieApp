@@ -5,7 +5,7 @@
 <ul>
   <h4>
     <li>Clone Repo into your system</li>
-    <li>C=Set up firebase config by setting up a firebase account and using the keys</li>
+    <li>Set up firebase config by setting up a firebase account and using the keys</li>
     <li>Open index.html and have fun!!</li>
   </h4>
 </ul>
