@@ -7,6 +7,8 @@ const firebaseConfig = {
   appId
 }
 
+
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
@@ -51,8 +53,38 @@ const StorageCtrl=(function(){
         }
       })
     },
-    
 
+    getCalorieData: function(month,year,days) {
+      const ref = db.ref("items");
+      const items=[];
+      return new Promise((resolve,reject) => {
+        if(ref!==null){
+          ref.on("value", function(data){
+            res=data.val();
+            const keys = Object.keys(res);
+            for (let i = 0; i < keys.length; i++) {
+              const verifier=keys[i].split('-');
+              if(parseInt(verifier[1])===month && parseInt(verifier[2])===year) {
+                let calories=0;
+                //res[keys[i]].forEach((item) => calories+=item.calories)
+                for (let key in res[keys[i]]) {
+                  calories+=res[keys[i]][key].calories
+                }
+                items.push([parseInt(verifier[0]),calories]);
+              }
+            }
+            resolve(items)
+          }, (err) => {
+            reject(err);
+          });
+        }
+        else {
+          console.log('No collection')
+          resolve(items);
+        }
+      })
+    },
+    
     updateStorage: function(id,currentItem) {
       let today = new Date();
       const time=today.getHours()+':'+today.getMinutes();
@@ -95,7 +127,7 @@ const StorageCtrl=(function(){
 
     addStorage: function(name,calories) {
       let today = new Date();
-      const time=today.getHours()+':'+today.getMinutes();
+      const time=String(today.getHours()).padStart(2, '0')+':'+String(today.getMinutes()).padStart(2, '0');
       const dd = String(today.getDate()).padStart(2, '0');
       const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
       const yyyy = today.getFullYear();
@@ -334,6 +366,106 @@ const UICtrl=(function(){
       document.querySelectorAll('.secondary-content').forEach((tag) => {
         tag.style.display='block'
       })
+    },
+    future: function() {
+      this.hidePast();
+      document.querySelector('.collection').display='none'
+    },
+    showChart: async function(month,year) {
+      month=parseInt(month)
+      year=parseInt(year)
+      const labels=[];
+      const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+
+      const monthDays=[31,28,31,30,31,30,31,31,30,31,30,31];
+      if(year%4==0) {
+        if(year%100==0) {
+          if(year%400==0) {
+            monthDays[1]=29;
+          }
+        }
+        else {
+          monthDays[1]=29;
+        }
+      }
+      
+      const data=[];
+
+      const today = new Date();
+      const dd = String(today.getDate()).padStart(2, '0');
+      const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+      const yyyy = today.getFullYear();
+
+      if(parseInt(yyyy)>year || (parseInt(yyyy)===year && parseInt(mm)>month)) {
+        alert('Data not available')
+        return;
+      }
+
+      if(parseInt(yyyy)===year && parseInt(mm)===month) {
+        //console.log('Entered correctly')
+        monthDays[month-1]=parseInt(dd);
+      }
+
+      for (let i=1;i<monthDays[month-1]+1;i++) {
+        labels.push(i);
+        data.push(0)
+      }
+
+      StorageCtrl.getCalorieData(month,year,monthDays[month-1])
+        .then((res) => {
+          res.forEach((item) => {
+            data[item[0]-1]=item[1]
+          })
+
+          console.log(data)
+
+          const ctx = document.getElementById('chart').getContext('2d');
+          const chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+        
+            // The data for our dataset
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: `Intake for month of ${months[month-1]}`,
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: data,
+                    fill:false
+                }]
+            },
+        
+            // Configuration options go here
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              legend: {
+                  onClick: (e) => e.stopPropagation()
+              }
+            }
+            
+          });
+          chart.canvas.parentNode.style.height = '650px';
+          chart.canvas.parentNode.style.width = '650px';
+          //console.log(document.querySelectorAll('.information'))
+          document.querySelectorAll('.information')[1].style.display='none';
+          document.querySelector('.contain').style.display='none';
+          
+        })
     }
   }
 })();
@@ -389,8 +521,13 @@ const App=(function(ItemCtrl,UICtrl,StorageCtrl){
       renderCalendar();
     });
 
+    document.querySelector('.brand-logo').addEventListener('click',() => {
+      window.location.reload();
+    })
+
     document.querySelector('.modal-trigger').addEventListener('click',(e) => {
       document.querySelector('.contain').style.display='block';
+      document.querySelectorAll('.information')[1].style.display='none'
       document.querySelector('.information').style.display='none';
     })
 
@@ -400,16 +537,26 @@ const App=(function(ItemCtrl,UICtrl,StorageCtrl){
       e.preventDefault();
     })
 
+    document.querySelector('.date').addEventListener('click',(e) => {
+      if(e.target.tagName.toLowerCase() === 'h1') {
+        const date=document.querySelector('.month-days').id.split('-')
+        console.log(`Show Chart of ${date[2]}-${date[3]}`)
+        UICtrl.showChart(date[2],date[3]);
+      }
+    })
+
     document.querySelector('.fa-window-close').addEventListener('click',(e) => {
       document.querySelector('.contain').style.display='none';
       document.querySelector('.information').style.display='block';
       const current_date=current.split('-');
       const d=current_date[1]+'-'+current_date[2]+'-'+current_date[3]
+      const dNumber=parseInt(current_date[3]+current_date[2]+current_date[1]);
       let today = new Date();
       const dd = String(today.getDate()).padStart(2, '0');
       const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
       const yyyy = today.getFullYear();
       today = dd + '-' + mm + '-' + yyyy;
+      const tNumber=parseInt(yyyy+mm+dd);
       StorageCtrl.getStorageItems(d)
         .then((res) => {
           if(res) {
@@ -431,11 +578,14 @@ const App=(function(ItemCtrl,UICtrl,StorageCtrl){
             ItemCtrl.setItems([]);
             UICtrl.hideSpinner(0);
           }
-          if(d!==today) {
-            UICtrl.hidePast();
+          if(d===today) {
+            UICtrl.showPresent();
+          }
+          else if(dNumber>tNumber) {
+            UICtrl.future();
           }
           else {
-            UICtrl.showPresent();
+            UICtrl.hidePast();
           }
         })
         .catch((err) => {
@@ -445,10 +595,6 @@ const App=(function(ItemCtrl,UICtrl,StorageCtrl){
 
 
     })
-
-
-
-
 
 
     document.querySelector('.days').addEventListener('click',(e) => {
@@ -626,6 +772,7 @@ const App=(function(ItemCtrl,UICtrl,StorageCtrl){
           else {
             ItemCtrl.setItems([]);
             UICtrl.hideSpinner(0);
+            renderCalendar();
           }
         })
         .catch((err) => {

@@ -9,6 +9,10 @@ html {
   font-size: 62.5%;
 }
 
+.date h1:hover {
+  cursor: pointer;
+}
+
 .nav {
   font-size: 2rem;
 }
@@ -138,4 +142,10 @@ html {
 }
 .total-calories {
   position: relative;
+}
+
+#chart {
+  display: none;
+  width: 20%;
+  height: 5%;
 }
